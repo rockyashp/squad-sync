@@ -91,9 +91,11 @@ async def evaluate_team(
     current_user: CurrentUser,
     matchmaking_service: MatchmakingServiceDep,
 ) -> ApiResponse[SquadComposition]:
-    """Evaluate full team balance, missing roles, and warnings for specified player IDs."""
+    """Evaluate full team balance, missing roles, and warnings for specified player IDs or roles."""
     result = await matchmaking_service.evaluate_team(
         user_ids=payload.user_ids,
+        roles=payload.roles,
+        player_ids=payload.player_ids,
         game_name=payload.game_name,
     )
     return ApiResponse.ok(

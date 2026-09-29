@@ -71,16 +71,18 @@ class SquadRecommendationResponse(BaseModel):
 
 class SquadRecommendationRequest(BaseModel):
     """Request options for generating squad recommendations."""
-    game_name: str = Field(default="Valorant", description="Target competitive game title")
-    target_region: str | None = Field(default=None, description="Optional region filter")
-    candidate_pool_limit: int = Field(default=40, ge=5, le=100, description="Max candidate pool size to analyze")
-
     model_config = ConfigDict(
+        extra="ignore",
         json_schema_extra={
             "example": {
                 "game_name": "Valorant",
                 "target_region": "NA-East",
                 "candidate_pool_limit": 30,
             }
-        }
+        },
     )
+
+    game_name: str = Field(default="Valorant", description="Target competitive game title")
+    target_region: str | None = Field(default=None, description="Optional region filter")
+    candidate_pool_limit: int = Field(default=40, ge=5, le=100, description="Max candidate pool size to analyze")
+    target_player_ids: list[Any] | None = Field(default=None, description="Optional drafted or target player IDs")

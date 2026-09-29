@@ -7,6 +7,7 @@ Pydantic v2 schemas for Matchmaking Engine:
 """
 
 from datetime import datetime
+from typing import Any
 import uuid
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -121,8 +122,12 @@ class SquadRecommendationResponse(BaseModel):
 
 
 class TeamEvaluationRequest(BaseModel):
-    """Payload for evaluating an existing group of players."""
-    user_ids: list[uuid.UUID] = Field(..., min_length=2, max_length=5, description="Member UUIDs")
+    """Payload for evaluating an existing group of players or drafted roles."""
+    model_config = ConfigDict(extra="ignore")
+
+    user_ids: list[uuid.UUID] | None = Field(default=None, description="Member UUIDs")
+    player_ids: list[Any] | None = Field(default=None, description="Drafted player IDs (string or UUID)")
+    roles: list[str] | None = Field(default=None, description="Drafted tactical roles")
     game_name: str = Field(default="Valorant", description="Target competitive game title")
 
 

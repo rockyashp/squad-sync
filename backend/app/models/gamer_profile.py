@@ -100,6 +100,18 @@ class GamerProfile(Base, TimestampMixin):
     def gamer_tag(self) -> str | None:
         return self.display_name or self.full_name
 
+    @property
+    def primary_role(self) -> str | None:
+        if self.preferred_role:
+            return self.preferred_role
+        if self.preferred_roles and len(self.preferred_roles) > 0:
+            return self.preferred_roles[0]
+        return None
+
+    @property
+    def rank_tier(self) -> str | None:
+        return self.rank
+
     # JSONB for extended preferences (voice comms, crossplay, playstyle tags)
     preferences: Mapped[dict | None] = mapped_column(
         JSONB,

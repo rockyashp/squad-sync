@@ -91,6 +91,7 @@ class User(Base, TimestampMixin):
         uselist=False,
         cascade="all, delete-orphan",
         passive_deletes=True,
+        lazy="selectin",
     )
 
     game_accounts: Mapped[list["GameAccount"]] = relationship(
@@ -118,6 +119,25 @@ class User(Base, TimestampMixin):
     @property
     def survey_responses(self) -> list["SurveyAnswer"]:
         return self.survey_answers
+
+    @property
+    def gamer_tag(self) -> str | None:
+        try:
+            if self.profile:
+                return self.profile.gamer_tag
+        except Exception:
+            pass
+        return self.username
+
+    @property
+    def avatar_url(self) -> str | None:
+        try:
+            if self.profile:
+                return self.profile.avatar_url or self.profile.avatar
+        except Exception:
+            pass
+        return None
+
 
     gamer_dna: Mapped["GamerDNA | None"] = relationship(
         "GamerDNA",

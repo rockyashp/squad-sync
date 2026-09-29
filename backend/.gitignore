@@ -41,6 +41,12 @@ venv.bak/
 *.swp
 *.swo
 
+# Database
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+
 # Testing & Coverage
 .coverage
 .pytest_cache/

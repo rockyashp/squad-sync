@@ -119,6 +119,32 @@ class TeamMember(Base, TimestampMixin):
     team: Mapped["Team"] = relationship("Team", back_populates="members")
     user = relationship("User", foreign_keys=[user_id], lazy="joined")
 
+    @property
+    def joined_at(self) -> datetime:
+        return self.created_at
+
+    @property
+    def username(self) -> str:
+        return self.user.username if self.user else ""
+
+    @property
+    def gamer_tag(self) -> str | None:
+        try:
+            if self.user and self.user.profile:
+                return self.user.profile.display_name or self.user.profile.full_name or self.user.username
+        except Exception:
+            pass
+        return self.username
+
+    @property
+    def avatar_url(self) -> str | None:
+        try:
+            if self.user and self.user.profile:
+                return self.user.profile.avatar_url or self.user.profile.avatar
+        except Exception:
+            pass
+        return None
+
     __table_args__ = (
         UniqueConstraint("team_id", "user_id", name="uq_team_members_team_user"),
     )

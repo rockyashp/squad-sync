@@ -39,8 +39,15 @@ coverage.xml
 .env.local
 
 # Database
+*.sqlite
 *.sqlite3
+*.db
 *.db-journal
+
+# Frontend
+node_modules/
+dist/
+dist-ssr/
 
 # Logs
 *.log

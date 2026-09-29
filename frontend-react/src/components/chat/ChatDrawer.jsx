@@ -128,7 +128,8 @@ function ChatDrawer({ activeChatTarget, onCloseTarget }) {
     const token = localStorage.getItem('squadsync_token');
     if (!token) return;
 
-    const wsUrl = `ws://127.0.0.1:8000/api/v1/chat/ws?token=${token}`;
+    const baseWsUrl = import.meta.env?.VITE_WS_URL || 'ws://127.0.0.1:8000/api/v1/chat/ws';
+    const wsUrl = `${baseWsUrl}?token=${token}`;
     setConnectionStatus('connecting');
 
     const ws = new WebSocket(wsUrl);

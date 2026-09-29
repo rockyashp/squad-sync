@@ -7,6 +7,20 @@ import uuid
 from pydantic import BaseModel, ConfigDict, Field
 
 
+class GamerDNASubmitRequest(BaseModel):
+    """Payload when user completes frontend Gamer DNA survey."""
+    model_config = ConfigDict(extra="ignore")
+
+    leadership: int | None = Field(default=75, ge=0, le=100)
+    aggression: int | None = Field(default=65, ge=0, le=100)
+    communication: int | None = Field(default=80, ge=0, le=100)
+    game_sense: int | None = Field(default=80, ge=0, le=100)
+    strategy: int | None = Field(default=None, ge=0, le=100)
+    teamwork: int | None = Field(default=75, ge=0, le=100)
+    confidence: int | None = Field(default=70, ge=0, le=100)
+    preferred_role: str | None = Field(default=None)
+
+
 class GamerDNABase(BaseModel):
     """Core psychometric traits and role classifications."""
     leadership: int = Field(..., ge=0, le=100, description="Leadership score 0-100")
