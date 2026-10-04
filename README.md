@@ -1,4 +1,4 @@
-﻿<div align="center">
+<div align="center">
 
 # SquadSync 🎮
 
@@ -134,6 +134,25 @@ SEWDLPROJ/
 | Python | 3.12 | Backend runtime |
 | Node.js | 18 | Frontend build / dev server |
 | npm | 9 | Frontend package manager |
+
+---
+
+### Database Initialization (PostgreSQL)
+
+SquadSync runs on PostgreSQL. To verify connection, create `squadsync_db`, run Alembic migrations, and seed demo records in one step:
+
+```bash
+# Windows Command Prompt / Double-click
+setup_db.bat
+
+# PowerShell
+./setup_db.ps1
+
+# Or via Python directly
+python backend/setup_database.py
+```
+
+> **Using Docker?** Run `docker compose up -d` to spin up a pre-configured PostgreSQL 16 container on port `5431`.
 
 ---
 

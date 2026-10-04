@@ -16,23 +16,16 @@ from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
-if settings.SQLALCHEMY_DATABASE_URI.startswith("sqlite"):
-    engine: AsyncEngine = create_async_engine(
-        settings.SQLALCHEMY_DATABASE_URI,
-        echo=settings.DB_ECHO,
-        future=True,
-        connect_args={"check_same_thread": False},
-    )
-else:
-    engine: AsyncEngine = create_async_engine(
-        settings.SQLALCHEMY_DATABASE_URI,
-        echo=settings.DB_ECHO,
-        future=True,
-        pool_size=settings.DB_POOL_SIZE,
-        max_overflow=settings.DB_MAX_OVERFLOW,
-        pool_timeout=settings.DB_POOL_TIMEOUT,
-        pool_pre_ping=True,
-    )
+# PostgreSQL async engine (asyncpg driver) with connection pool tuning
+engine: AsyncEngine = create_async_engine(
+    settings.SQLALCHEMY_DATABASE_URI,
+    echo=settings.DB_ECHO,
+    future=True,
+    pool_size=settings.DB_POOL_SIZE,
+    max_overflow=settings.DB_MAX_OVERFLOW,
+    pool_timeout=settings.DB_POOL_TIMEOUT,
+    pool_pre_ping=True,
+)
 
 # Async Sessionmaker factory
 AsyncSessionLocal: async_sessionmaker[AsyncSession] = async_sessionmaker(

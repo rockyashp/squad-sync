@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: squadsync_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: squadsync_db
+    ports:
+      # Expose on 5431 (configured default) and 5432
+      - "5431:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d squadsync_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+    driver: local

@@ -3,6 +3,7 @@ Team and TeamMember SQLAlchemy 2.0 ORM models.
 Represents persistent squads, membership rosters, and tactical roles.
 """
 
+from datetime import datetime
 from typing import TYPE_CHECKING
 import uuid
 

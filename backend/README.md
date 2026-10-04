@@ -91,14 +91,23 @@ Copy the sample environment file and configure values for your PostgreSQL databa
 cp .env.example .env
 ```
 
-### 3. Database Migrations
+### 3. Database Setup & Migrations (PostgreSQL)
 
-Apply Alembic migrations to your database:
+You can verify, migrate, and seed the entire database automatically with one command:
 
 ```bash
-# Generate a new migration
-alembic revision --autogenerate -m "initial_tables"
+# Automated setup (checks connection, applies migrations, seeds demo data if empty)
+python setup_database.py
 
+# Optional flags:
+python setup_database.py --check    # Check table inventory without modifying data
+python setup_database.py --seed     # Force seed demo rosters, DNA, and stats
+python setup_database.py --reset    # Wipe tables, re-migrate and re-seed from scratch
+```
+
+Or apply Alembic migrations manually:
+
+```bash
 # Upgrade database to head
 alembic upgrade head
 ```

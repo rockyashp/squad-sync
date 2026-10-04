@@ -104,14 +104,14 @@ class Settings(BaseSettings):
     NEWS_CACHE_TTL_HOURS: int = 1
 
     # --------------------------------------------------------------------------
-    # Database Configuration (PostgreSQL / SQLite fallback)
+    # Database Configuration (PostgreSQL via pgAdmin)
     # --------------------------------------------------------------------------
     POSTGRES_SERVER: str = "localhost"
-    POSTGRES_PORT: int = 5432
+    POSTGRES_PORT: int = 5431
     POSTGRES_USER: str = "postgres"
-    POSTGRES_PASSWORD: str = "postgres"
+    POSTGRES_PASSWORD: str = "root"
     POSTGRES_DB: str = "squadsync_db"
-    DATABASE_URL: str | None = "sqlite+aiosqlite:///./squadsync.db"
+    DATABASE_URL: str | None = "postgresql+asyncpg://postgres:root@localhost:5431/squadsync_db"
 
     # Connection Pool Settings
     DB_POOL_SIZE: int = 10
@@ -123,16 +123,20 @@ class Settings(BaseSettings):
     @property
     def SQLALCHEMY_DATABASE_URI(self) -> str:
         """
-        Computed async database connection URL for SQLAlchemy 2.0.
+        Computed async PostgreSQL connection URL for SQLAlchemy 2.0 (asyncpg driver).
+        Uses DATABASE_URL from .env if provided, otherwise builds from individual POSTGRES_* settings.
         """
         if self.DATABASE_URL:
+            # Normalise plain postgresql:// -> postgresql+asyncpg://
             if self.DATABASE_URL.startswith("postgresql://"):
                 return self.DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
-            if self.DATABASE_URL.startswith("sqlite://"):
-                return self.DATABASE_URL.replace("sqlite://", "sqlite+aiosqlite://", 1)
             return self.DATABASE_URL
 
-        return "sqlite+aiosqlite:///./squadsync.db"
+        # Build from individual POSTGRES_* env vars
+        return (
+            f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
+            f"@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+        )
 
     @computed_field  # type: ignore[prop-decorator]
     @property

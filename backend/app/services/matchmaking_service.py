@@ -3,7 +3,7 @@ Matchmaking Service orchestrating candidate ingestion, compatibility scoring,
 team balance analysis, missing role detection, and squad recommendations.
 """
 
-from typing import Sequence
+from typing import Any, Sequence
 import uuid
 
 from fastapi import HTTPException, status

@@ -68,17 +68,25 @@ export default function Navbar({ backendHealth, activeTab, onSelectTab }) {
         {isAuthenticated ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             {/* User Badge */}
-            <div className="userBadge" style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '6px 14px',
-              background: 'rgba(34, 211, 238, 0.08)',
-              border: '1px solid rgba(34, 211, 238, 0.3)',
-              borderRadius: '12px',
-              color: '#22d3ee',
-              fontFamily: "'Space Grotesk', sans-serif",
-            }}>
+            <div 
+              className="userBadge" 
+              onClick={() => onSelectTab && onSelectTab('profile')}
+              title="View Gamer Profile & DNA"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '6px 14px',
+                background: activeTab === 'profile' ? 'rgba(34, 211, 238, 0.2)' : 'rgba(34, 211, 238, 0.08)',
+                border: activeTab === 'profile' ? '1px solid #22d3ee' : '1px solid rgba(34, 211, 238, 0.3)',
+                borderRadius: '12px',
+                color: '#22d3ee',
+                fontFamily: "'Space Grotesk', sans-serif",
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                boxShadow: activeTab === 'profile' ? '0 0 15px rgba(34, 211, 238, 0.3)' : 'none'
+              }}
+            >
               <div style={{
                 width: '24px',
                 height: '24px',
