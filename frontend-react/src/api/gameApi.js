@@ -40,11 +40,11 @@ export const gameApi = {
   // Steam & OpenDota specific endpoints
   getSteamLoginUrl: async (returnTo = null) => {
     const params = returnTo ? { return_to: returnTo } : {};
-    return apiClient.get('/steam/login', { params });
+    return apiClient.get('/games/steam/login', { params });
   },
 
   getDota2Profile: async () => {
-    return apiClient.get('/dota2/me');
+    return apiClient.get('/games/dota2/me');
   },
 
   syncDota2: async (accountId = null, steamId = null, background = false) => {
@@ -52,33 +52,33 @@ export const gameApi = {
     if (accountId) params.account_id = accountId;
     if (steamId) params.steam_id = steamId;
     if (background) params.background = background;
-    return apiClient.post('/dota2/sync', null, { params });
+    return apiClient.post('/games/dota2/sync', null, { params });
   },
 
   // Riot RSO & Valorant specific endpoints
   getRiotLoginUrl: async (state = null) => {
     const params = state ? { state } : {};
-    return apiClient.get('/riot/login', { params });
+    return apiClient.get('/games/riot/login', { params });
   },
 
   getRiotProfile: async () => {
-    return apiClient.get('/riot/me');
+    return apiClient.get('/games/riot/me');
   },
 
   handleRiotCallback: async (code, state = null) => {
     const params = { code };
     if (state) params.state = state;
-    return apiClient.get('/riot/callback', { params });
+    return apiClient.get('/games/riot/callback', { params });
   },
 
   handleSteamCallback: async (queryParams) => {
-    return apiClient.get('/steam/callback', { params: queryParams });
+    return apiClient.get('/games/steam/callback', { params: queryParams });
   },
 
   syncRiot: async (accountId = null, puuid = null) => {
     const params = {};
     if (accountId) params.account_id = accountId;
     if (puuid) params.puuid = puuid;
-    return apiClient.post('/riot/sync', null, { params });
+    return apiClient.post('/games/riot/sync', null, { params });
   },
 };

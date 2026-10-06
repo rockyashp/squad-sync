@@ -26,7 +26,7 @@ export default function OAuthProductionGuideModal({ onClose }) {
 RIOT_API_KEY=RGAPI-your-live-riot-api-key
 RIOT_CLIENT_ID=your-registered-rso-client-id
 RIOT_CLIENT_SECRET=your-registered-rso-client-secret
-RIOT_REDIRECT_URI=http://localhost:8000/api/v1/riot/callback
+RIOT_REDIRECT_URI=http://localhost:8000/api/v1/games/riot/callback
 RIOT_RSO_AUTH_URL=https://auth.riotgames.com/authorize
 RIOT_RSO_TOKEN_URL=https://auth.riotgames.com/token
 RIOT_RSO_USERINFO_URL=https://auth.riotgames.com/userinfo`;
@@ -36,7 +36,7 @@ RIOT_RSO_USERINFO_URL=https://auth.riotgames.com/userinfo`;
 STEAM_API_KEY=your-32-char-steam-web-api-key
 STEAM_OPENID_URL=https://steamcommunity.com/openid/login
 STEAM_REALM=http://localhost:8000
-STEAM_RETURN_URL=http://localhost:8000/api/v1/steam/callback`;
+STEAM_RETURN_URL=http://localhost:8000/api/v1/games/steam/callback`;
 
   return (
     <div className="modalOverlay" onClick={onClose} style={{ zIndex: 1200 }}>
@@ -158,7 +158,7 @@ STEAM_RETURN_URL=http://localhost:8000/api/v1/steam/callback`;
           <ol style={{ color: '#cbd5e1', fontSize: '13px', lineHeight: 1.6, paddingLeft: '20px', margin: '0 0 14px 0' }}>
             <li>Log into the <strong>Riot Developer Portal</strong> and create a new Application.</li>
             <li>Request <strong>Riot Sign-On (RSO)</strong> product access for the scopes: <code>openid</code> and <code>cpid</code>.</li>
-            <li>Add your callback redirect URI: <code>http://localhost:8000/api/v1/riot/callback</code>.</li>
+            <li>Add your callback redirect URI: <code>http://localhost:8000/api/v1/games/riot/callback</code>.</li>
             <li>Copy your <code>Client ID</code> and <code>Client Secret</code> into <code>backend/.env</code>:</li>
           </ol>
 
@@ -247,7 +247,7 @@ STEAM_RETURN_URL=http://localhost:8000/api/v1/steam/callback`;
 
           <ol style={{ color: '#cbd5e1', fontSize: '13px', lineHeight: 1.6, paddingLeft: '20px', margin: '0 0 14px 0' }}>
             <li>Generate a <strong>Steam Web API Key</strong> associated with your Steam Community domain.</li>
-            <li>Configure OpenID 2.0 return URL: <code>http://localhost:8000/api/v1/steam/callback</code>.</li>
+            <li>Configure OpenID 2.0 return URL: <code>http://localhost:8000/api/v1/games/steam/callback</code>.</li>
             <li>Save your <code>STEAM_API_KEY</code> into <code>backend/.env</code>:</li>
           </ol>
 
