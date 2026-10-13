@@ -10,6 +10,7 @@ from app.schemas.common import ApiResponse
 from app.schemas.dna import (
     GamerDNACardResponse,
     GamerDNAEvaluationResponse,
+    GamerDNASubmitRequest,
 )
 
 router = APIRouter()
@@ -21,24 +22,32 @@ router = APIRouter()
     status_code=status.HTTP_200_OK,
     summary="Classify and generate Gamer DNA",
     description=(
-        "Executes the rule-based classification engine against the user's stored survey responses. "
-        "Calculates Leadership, Communication, Strategy, Teamwork, and Aggression scores, "
-        "determines Primary & Secondary roles (Leader, Support, Strategist, Duelist, Sentinel, Controller), "
-        "and saves the result in the gamer_dna table."
+        "Executes classification against user's stored survey responses, "
+        "or directly persists traits from the frontend quiz submission."
     ),
 )
 async def generate_gamer_dna(
     current_user: CurrentUser,
     dna_service: DNAServiceDep,
+    payload: GamerDNASubmitRequest | None = None,
 ) -> ApiResponse[GamerDNAEvaluationResponse]:
-    """Classify gamer role from survey responses and persist to database."""
-    evaluation = await dna_service.classify_and_store(user_id=current_user.id)
+    """Classify gamer role from survey responses or frontend quiz and persist to database."""
+    if payload and (payload.leadership is not None or payload.preferred_role is not None):
+        evaluation = await dna_service.create_or_update_direct(user_id=current_user.id, payload=payload)
+    else:
+        evaluation = await dna_service.classify_and_store(user_id=current_user.id)
     return ApiResponse.ok(
         data=evaluation,
         message="Gamer DNA classified and saved successfully.",
     )
 
 
+@router.get(
+    "",
+    response_model=ApiResponse[GamerDNACardResponse],
+    status_code=status.HTTP_200_OK,
+    summary="Get Gamer DNA Card (Root Alias)",
+)
 @router.get(
     "/me",
     response_model=ApiResponse[GamerDNACardResponse],

@@ -5,7 +5,7 @@ import Step2SelectGame from './Step2SelectGame';
 import Step3SquadMode from './Step3SquadMode';
 import Step4AIDraft from './Step4AIDraft';
 
-export default function MatchmakerDashboard() {
+export default function MatchmakerDashboard({ onNavigateTab, onOpenChat }) {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedGame, setSelectedGame] = useState('VALORANT');
   const [isDnaSaved, setIsDnaSaved] = useState(false);
@@ -74,6 +74,8 @@ export default function MatchmakerDashboard() {
       {currentStep === 4 && (
         <Step4AIDraft
           selectedGame={selectedGame}
+          onNavigateTab={onNavigateTab}
+          onOpenChat={onOpenChat}
         />
       )}
     </div>

@@ -41,6 +41,12 @@ venv.bak/
 *.swp
 *.swo
 
+# Database
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+
 # Testing & Coverage
 .coverage
 .pytest_cache/
@@ -56,3 +62,7 @@ logs/
 # OS specific
 .DS_Store
 Thumbs.db
+
+# Uploaded Media / Avatars
+static/avatars/*
+!static/avatars/.gitkeep

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const API_BASE_URL = 'http://127.0.0.1:8000/api/v1';
+export const API_BASE_URL = import.meta.env?.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api/v1';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -51,5 +51,14 @@ apiClient.interceptors.response.use(
     return Promise.reject(new Error(message));
   }
 );
+
+export const getAvatarSrc = (avatar) => {
+  if (!avatar) return null;
+  if (avatar.startsWith('http://') || avatar.startsWith('https://') || avatar.startsWith('data:')) {
+    return avatar;
+  }
+  const root = API_BASE_URL.replace(/\/api\/v1\/?$/, '');
+  return `${root}${avatar.startsWith('/') ? '' : '/'}${avatar}`;
+};
 
 export default apiClient;

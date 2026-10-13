@@ -12,13 +12,39 @@ const CANDIDATES_POOL = [
   { id: '6', name: 'Valkyrie', role: 'Initiator', desc: 'High Comms IGL', match: 93 },
 ];
 
-export default function Step4AIDraft({ selectedGame }) {
+export default function Step4AIDraft({ selectedGame, onNavigateTab, onOpenChat }) {
   const [bench, setBench] = useState(CANDIDATES_POOL);
   const [squad, setSquad] = useState([]);
   const [synergyScore, setSynergyScore] = useState(0);
   const [recommendation, setRecommendation] = useState('Draft players from the pool to analyze squad role synergy.');
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [broadcastFeedback, setBroadcastFeedback] = useState(null);
+  const [createdSquad, setCreatedSquad] = useState(null);
+
+  // Attempt to fetch AI recommended candidate pool from backend
+  useEffect(() => {
+    async function loadCandidates() {
+      try {
+        const res = await matchmakerApi.recommendSquads({ game_name: selectedGame, squad_size: 4 });
+        const data = res?.data || res;
+        if (data?.top_squads?.[0]?.members?.length > 0) {
+          const apiCandidates = data.top_squads[0].members.map((m, idx) => ({
+            id: m.user_id || String(idx + 10),
+            name: m.username,
+            role: m.assigned_role || m.primary_role || 'Duelist',
+            desc: m.personality || 'Tactical Operator',
+            match: Math.min(99, Math.round((m.win_rate || 50) + 40)),
+          }));
+          if (apiCandidates.length > 0) {
+            setBench(apiCandidates);
+          }
+        }
+      } catch (err) {
+        // Retain fallback CANDIDATES_POOL
+      }
+    }
+    loadCandidates();
+  }, [selectedGame]);
 
   // Calculate synergy whenever squad changes
   useEffect(() => {
@@ -90,11 +116,11 @@ export default function Step4AIDraft({ selectedGame }) {
     setSquad((prev) => prev.filter((_, idx) => idx !== index));
   };
 
-  const handleBroadcastComplete = (playerNames) => {
-    setBroadcastFeedback(`Real-time notifications sent to ${playerNames}. Awaiting lobby acceptances.`);
-    setTimeout(() => {
-      setBroadcastFeedback(null);
-    }, 7000);
+  const handleBroadcastComplete = (playerNames, squadObj) => {
+    setBroadcastFeedback(`Real-time invitations sent to ${playerNames}. Squad created and roster initialized.`);
+    if (squadObj) {
+      setCreatedSquad(squadObj);
+    }
   };
 
   return (
@@ -224,13 +250,13 @@ export default function Step4AIDraft({ selectedGame }) {
                 className="glassCard"
                 style={{
                   marginTop: '16px',
-                  padding: '16px 20px',
+                  padding: '18px 20px',
                   borderColor: '#2ed573',
                   background: 'rgba(46, 213, 115, 0.12)',
                   textAlign: 'left',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
                   <div
                     style={{
                       width: '32px',
@@ -249,12 +275,40 @@ export default function Step4AIDraft({ selectedGame }) {
                   </div>
                   <div>
                     <h4 style={{ color: '#2ed573', margin: 0, fontSize: '15px', fontWeight: 700 }}>
-                      Squad Join Requests Broadcasted!
+                      Squad Deployed Successfully!
                     </h4>
                     <p style={{ color: 'var(--text2)', margin: '4px 0 0 0', fontSize: '13px' }}>
                       {broadcastFeedback}
                     </p>
                   </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '10px' }}>
+                  {onNavigateTab && (
+                    <button
+                      type="button"
+                      className="primaryBtn"
+                      onClick={() => onNavigateTab('squads')}
+                      style={{ padding: '6px 14px', fontSize: '12px' }}
+                    >
+                      View in My Squads →
+                    </button>
+                  )}
+                  {onOpenChat && (
+                    <button
+                      type="button"
+                      className="glassBtn"
+                      onClick={() => onOpenChat({
+                        type: 'team',
+                        id: createdSquad?.id,
+                        name: createdSquad?.name || `${selectedGame} Squad`,
+                        role: selectedGame
+                      })}
+                      style={{ padding: '6px 14px', fontSize: '12px', color: '#22d3ee' }}
+                    >
+                      Open Squad Tactical Chat 💬
+                    </button>
+                  )}
                 </div>
               </div>
             )}

@@ -20,6 +20,7 @@ from app.schemas.dna import (
     GamerDNACardResponse,
     GamerDNAEvaluationResponse,
     GamerDNARead,
+    GamerDNASubmitRequest,
     ProfileCardSummary,
 )
 from app.services.base import BaseService
@@ -117,6 +118,79 @@ class DNAService(BaseService[GamerDNA]):
             score_breakdown=classification.scores,
             role_affinities=classification.role_affinities,
             reasoning=classification.reasoning,
+            gamer_dna=GamerDNARead.model_validate(dna_record),
+        )
+
+    async def create_or_update_direct(
+        self,
+        user_id: uuid.UUID,
+        payload: GamerDNASubmitRequest,
+    ) -> GamerDNAEvaluationResponse:
+        """Directly persists GamerDNA traits submitted from the frontend UI quiz."""
+        lead = payload.leadership or 75
+        comm = payload.communication or 80
+        strat = payload.strategy or payload.game_sense or 80
+        agg = payload.aggression or 65
+        team = payload.teamwork or 75
+        conf = payload.confidence or 70
+        primary = payload.preferred_role or "Initiator"
+        secondary = "Strategist" if primary != "Strategist" else "Support"
+        personality = f"The Tactical {primary}"
+
+        existing_dna = await self.dna_repo.get_by_user_id(user_id)
+        now = datetime.now(timezone.utc)
+        if existing_dna:
+            existing_dna.leadership = lead
+            existing_dna.communication = comm
+            existing_dna.strategy = strat
+            existing_dna.teamwork = team
+            existing_dna.aggression = agg
+            existing_dna.confidence = conf
+            existing_dna.primary_role = primary
+            existing_dna.secondary_role = secondary
+            existing_dna.personality = personality
+            existing_dna.reasoning = "Calculated from completed Gamer DNA assessment."
+            dna_record = await self.dna_repo.update(existing_dna)
+        else:
+            new_dna = GamerDNA(
+                id=uuid.uuid4(),
+                user_id=user_id,
+                leadership=lead,
+                communication=comm,
+                strategy=strat,
+                teamwork=team,
+                aggression=agg,
+                confidence=conf,
+                primary_role=primary,
+                secondary_role=secondary,
+                personality=personality,
+                reasoning="Calculated from completed Gamer DNA assessment.",
+                created_at=now,
+                updated_at=now,
+            )
+            dna_record = await self.dna_repo.create(new_dna)
+
+        return GamerDNAEvaluationResponse(
+            primary_role=dna_record.primary_role,
+            secondary_role=dna_record.secondary_role or "Support",
+            personality=dna_record.personality,
+            score_breakdown={
+                "Leadership": dna_record.leadership,
+                "Communication": dna_record.communication,
+                "Strategy": dna_record.strategy,
+                "Teamwork": dna_record.teamwork,
+                "Aggression": dna_record.aggression,
+                "Confidence": getattr(dna_record, "confidence", 70) or 70,
+            },
+            role_affinities={
+                "Leader": float(lead),
+                "Support": float(team),
+                "Strategist": float(strat),
+                "Duelist": float(agg),
+                "Sentinel": float(strat),
+                "Controller": float(comm),
+            },
+            reasoning=dna_record.reasoning or "Gamer DNA profile updated successfully.",
             gamer_dna=GamerDNARead.model_validate(dna_record),
         )
 

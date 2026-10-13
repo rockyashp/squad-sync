@@ -16,20 +16,25 @@ Production-ready FastAPI backend skeleton for **SquadSync**.
 ## Project Structure
 
 ```text
-SquadSync/
+backend/
 ├── .env.example
 ├── .gitignore
 ├── alembic.ini
 ├── requirements.txt
 ├── README.md
+├── STRUCTURE.md
+├── setup_database.py    # Automated DB creation, migrations & demo seeder
+├── seed_data.py         # Standalone test data seeder
+├── static/              # Static file storage
+│   └── avatars/         # Uploaded gamer avatars
 ├── alembic/
 │   ├── env.py
 │   ├── script.py.mako
 │   └── versions/
 └── app/
-    ├── main.py              # Application factory, lifespan, CORS, and router registration
-    ├── config.py            # Settings using Pydantic Settings v2
-    ├── database.py          # Async engine, sessionmaker, and get_db dependency
+    ├── main.py          # Application factory, lifespan, CORS, and router registration
+    ├── config.py        # Settings using Pydantic Settings v2
+    ├── database.py      # Async engine, sessionmaker, and get_db dependency
     ├── constants.py         # Application enums and constants
     ├── models/
     │   ├── __init__.py      # Models export registry for Alembic discovery
@@ -91,14 +96,23 @@ Copy the sample environment file and configure values for your PostgreSQL databa
 cp .env.example .env
 ```
 
-### 3. Database Migrations
+### 3. Database Setup & Migrations (PostgreSQL)
 
-Apply Alembic migrations to your database:
+You can verify, migrate, and seed the entire database automatically with one command:
 
 ```bash
-# Generate a new migration
-alembic revision --autogenerate -m "initial_tables"
+# Automated setup (checks connection, applies migrations, seeds demo data if empty)
+python setup_database.py
 
+# Optional flags:
+python setup_database.py --check    # Check table inventory without modifying data
+python setup_database.py --seed     # Force seed demo rosters, DNA, and stats
+python setup_database.py --reset    # Wipe tables, re-migrate and re-seed from scratch
+```
+
+Or apply Alembic migrations manually:
+
+```bash
 # Upgrade database to head
 alembic upgrade head
 ```

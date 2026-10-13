@@ -10,8 +10,8 @@ export default function ConfirmInviteModal({ isOpen, onClose, squad, selectedGam
 
   const handleConfirm = async () => {
     setBroadcasting(true);
+    let createdSquad = null;
     try {
-      // Create team in backend
       const teamData = {
         name: `${selectedGame} Strike Force ${Math.floor(100 + Math.random() * 900)}`,
         game: selectedGame,
@@ -19,15 +19,16 @@ export default function ConfirmInviteModal({ isOpen, onClose, squad, selectedGam
         synergy_score: Number(synergyScore) || 88.0,
       };
 
-      await squadsApi.createSquad(teamData);
+      const res = await squadsApi.createSquad(teamData);
+      createdSquad = res?.data || res;
       await matchmakerApi.recommendSquad(squad.map((p) => p.id));
     } catch (err) {
       console.warn('Backend team sync or recommendation fallback:', err);
+    } finally {
+      setBroadcasting(false);
+      onClose();
+      onBroadcastComplete(squad.map((p) => p.name).join(', '), createdSquad);
     }
-
-    setBroadcasting(false);
-    onClose();
-    onBroadcastComplete(squad.map((p) => p.name).join(', '));
   };
 
   return (

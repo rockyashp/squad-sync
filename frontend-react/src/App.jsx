@@ -10,6 +10,7 @@ import SquadsHub from './components/squads/SquadsHub';
 import NewsHub from './components/news/NewsHub';
 import AdminDashboard from './components/admin/AdminDashboard';
 import ChatDrawer from './components/chat/ChatDrawer';
+import ProfileHub from './components/profile/ProfileHub';
 import { 
   Users, 
   Shield, 
@@ -17,7 +18,9 @@ import {
   Bot,
   Newspaper,
   ShieldAlert,
-  Sparkles
+  Sparkles,
+  User,
+  Dna
 } from 'lucide-react';
 
 function App() {
@@ -129,7 +132,16 @@ function App() {
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', gap: '8px' }}>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      className="glassBtn"
+                      onClick={() => setActiveTab('profile')}
+                      style={{ padding: '6px 14px', fontSize: '12px', color: activeTab === 'profile' ? '#22d3ee' : undefined }}
+                    >
+                      <User size={13} color="#22d3ee" />
+                      <span>Gamer Profile & DNA</span>
+                    </button>
                     <button
                       type="button"
                       className="glassBtn"
@@ -155,6 +167,15 @@ function App() {
                 >
                   <Sparkles size={15} />
                   <span>Overview / Hero</span>
+                </button>
+
+                <button
+                  type="button"
+                  className={`dashTab ${activeTab === 'profile' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('profile')}
+                >
+                  <User size={15} />
+                  <span>Gamer Profile & DNA</span>
                 </button>
 
                 <button
@@ -209,9 +230,18 @@ function App() {
               </div>
 
               {/* TAB CONTENT */}
+              {activeTab === 'profile' && (
+                <div style={{ marginTop: '20px' }}>
+                  <ProfileHub onRetakeDna={() => setActiveTab('matchmaker')} />
+                </div>
+              )}
+
               {activeTab === 'matchmaker' && (
                 <div style={{ marginTop: '20px' }}>
-                  <MatchmakerDashboard />
+                  <MatchmakerDashboard 
+                    onNavigateTab={setActiveTab}
+                    onOpenChat={handleOpenChat}
+                  />
                 </div>
               )}
 

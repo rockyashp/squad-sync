@@ -32,5 +32,7 @@ class UserRead(UserBase):
     is_active: bool = Field(..., description="Whether user account is active")
     is_locked: bool = Field(..., description="Whether user account is locked due to failed logins")
     is_admin: bool = Field(default=False, description="Whether user has administrator privileges (BR-4)")
+    gamer_tag: str | None = Field(default=None, description="Gamer display tag / moniker")
+    avatar_url: str | None = Field(default=None, description="Avatar image URL")
     created_at: datetime = Field(..., description="Account creation UTC timestamp")
     updated_at: datetime = Field(..., description="Account last updated UTC timestamp")

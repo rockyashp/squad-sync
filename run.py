@@ -25,7 +25,29 @@ def get_python_executable():
         return str(venv_python_posix)
     return sys.executable
 
-def print_banner(frontend_type, frontend_port):
+def check_postgres():
+    """Checks if the configured PostgreSQL server is listening."""
+    pg_port = 5431
+    pg_host = "127.0.0.1"
+    env_file = BACKEND_DIR / ".env"
+    if env_file.exists():
+        try:
+            for line in env_file.read_text().splitlines():
+                if line.startswith("POSTGRES_PORT="):
+                    pg_port = int(line.split("=")[1].strip())
+                elif line.startswith("POSTGRES_SERVER="):
+                    pg_host = line.split("=")[1].strip()
+                    if pg_host == "localhost":
+                        pg_host = "127.0.0.1"
+        except Exception:
+            pass
+
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.settimeout(1.5)
+        is_online = (s.connect_ex((pg_host, pg_port)) == 0)
+        return is_online, pg_host, pg_port
+
+def print_banner(frontend_type, frontend_port, pg_status):
     banner = f"""
 ====================================================================
                SQUAD SYNC - LOCAL DEVELOPMENT SERVERS
@@ -35,6 +57,7 @@ def print_banner(frontend_type, frontend_port):
  [Interactive Docs]  : http://127.0.0.1:8000/docs
  [Health Endpoint]   : http://127.0.0.1:8000/health
  [WebSocket Chat]    : ws://127.0.0.1:8000/api/v1/chat/ws
+ [PostgreSQL DB]     : {pg_status}
 
  Press Ctrl+C at any time to gracefully terminate all services.
 ====================================================================
@@ -45,6 +68,16 @@ def main():
     py_exec = get_python_executable()
     print(f"[*] Using Python: {py_exec}")
     print(f"[*] Project Root: {ROOT_DIR}")
+
+    # Verify PostgreSQL connectivity
+    pg_online, pg_host, pg_port = check_postgres()
+    if pg_online:
+        print(f"[+] PostgreSQL Database : Online ({pg_host}:{pg_port}/squadsync_db)")
+        pg_status_str = f"{pg_host}:{pg_port}/squadsync_db (Connected)"
+    else:
+        print(f"[!] PostgreSQL Database : OFFLINE or UNREACHABLE on {pg_host}:{pg_port}")
+        print("    To initialize the database, run: python backend/setup_database.py")
+        pg_status_str = f"{pg_host}:{pg_port}/squadsync_db (Offline - Check Service)"
 
     # Ensure backend directory exists
     if not BACKEND_DIR.exists():
@@ -103,7 +136,7 @@ def main():
 
         # Wait a moment for servers to bind
         time.sleep(2.0)
-        print_banner(frontend_type, frontend_port)
+        print_banner(frontend_type, frontend_port, pg_status_str)
 
         # Monitor processes
         while True:
